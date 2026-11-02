@@ -1,0 +1,12 @@
+# secrets : ne jamais versionner
+*.pem
+turtlebot_key*
+*.env
+secrets*
+hosts.yml
+# données et environnements
+*.bag
+*.pkl
+*.npy
+__pycache__/
+.venv/

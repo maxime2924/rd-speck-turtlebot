@@ -1,0 +1,41 @@
+#!/bin/bash
+# À copier en diag.sh sur la partition system-boot. Remplacer les CHANGE_ME.
+BOOT=/boot/firmware
+D=$BOOT/diag
+mkdir -p "$D"
+exec >"$D/run.log" 2>&1
+
+# 1. ne s'exécuter qu'une seule fois
+sed -i 's/ systemd\.run=[^ ]*//g; s/ systemd\.run_success_action=[^ ]*//g; s/ systemd\.unit=[^ ]*//g' "$BOOT/cmdline.txt"
+
+# 2. diagnostic : copie des journaux des démarrages précédents
+cp /etc/hostname "$D/hostname.txt"
+cp /etc/os-release "$D/os-release.txt"
+cp /etc/netplan/*.yaml "$D/"
+tail -n 1500 /var/log/cloud-init.log > "$D/cloud-init.log"
+tail -n 3000 /var/log/syslog > "$D/syslog.txt"
+tail -n 500 /var/log/auth.log > "$D/auth.log"
+
+# 3. corrections
+echo 'ubuntu:CHANGE_ME' | chpasswd
+mkdir -p /etc/ssh/sshd_config.d /etc/cloud/cloud.cfg.d
+echo 'PasswordAuthentication yes' > /etc/ssh/sshd_config.d/00-pw.conf
+systemctl enable ssh
+echo 'network: {config: disabled}' > /etc/cloud/cloud.cfg.d/99-disable-network-config.cfg
+cat > /etc/netplan/50-cloud-init.yaml <<'EOF'
+network:
+  version: 2
+  ethernets:
+    eth0:
+      dhcp4: true
+      optional: true
+  wifis:
+    wlan0:
+      dhcp4: true
+      optional: true
+      access-points:
+        "CHANGE_ME_SSID":
+          password: "CHANGE_ME_PASSWORD"
+EOF
+chmod 600 /etc/netplan/50-cloud-init.yaml
+echo termine > "$D/done.txt"
