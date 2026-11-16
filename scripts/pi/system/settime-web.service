@@ -1,0 +1,11 @@
+[Unit]
+Description=Set clock from web Date header
+After=network-online.target
+Wants=network-online.target
+
+[Service]
+Type=oneshot
+ExecStart=/usr/local/bin/settime-web
+
+[Install]
+WantedBy=multi-user.target

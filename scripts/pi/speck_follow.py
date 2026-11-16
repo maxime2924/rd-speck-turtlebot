@@ -6,7 +6,7 @@ SIGN = 1.0      # mettre -1.0 si le robot tourne du mauvais cote
 K = 0.6         # gain
 MAX_W = 0.4     # vitesse de rotation max (rad/s)
 DEAD = 0.08     # zone morte autour du centre
-MIN_N = 200     # nombre minimal d'evenements pour y croire
+MIN_N = 60      # nombre minimal d'evenements pour y croire
 TIMEOUT = 0.3   # s sans cible -> arret
 
 rospy.init_node("speck_follow")

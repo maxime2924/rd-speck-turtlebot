@@ -1,0 +1,7 @@
+#!/bin/bash
+for i in $(seq 1 30); do
+  d=$(curl -sI --max-time 5 http://example.com | grep -i '^date:' | cut -d' ' -f2- | tr -d '\r')
+  if [ -n "$d" ]; then date -u -s "$d" && exit 0; fi
+  sleep 5
+done
+exit 1
